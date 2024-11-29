@@ -1,0 +1,105 @@
+Section          Base   Top    High   Length
+---------------- ------ ------ ------ -------
+.icon            D1A882 D1A895            13h
+.init.libs       D1A895 D1A8ED            58h
+.libs            D1A8ED D1A91C            2Fh
+.init.clock      D1A91C D1A937            1Bh
+.init.reruncheck D1A937 D1A937             0h
+.init            D1A937 D1A961            2Ah
+.fini            D1A961 D1A995            34h
+.text            D1A995 D1B37B           9E6h
+.data            D1B37B D1B394            19h
+.rodata          D1B394 D1B40D            79h
+.init_array      000000 000000             0h
+.ctors           000000 000000             0h
+.dtors           000000 000000             0h
+.fini_array      000000 000000             0h
+.bss             D052C6 D053C5 D13FD8     FFh
+.header          D1A87F D1A882             3h
+
+Label                        Value
+--------------------------   ------
+___low_bss                 = D052C6
+___len_bss                 = 0000FF
+___heaptop                 = D13FD8
+___heapbot                 = D053C5
+___libs                    = D1A8ED
+___init_array_count        = 000000
+___ctors_count             = 000000
+___dtors_count             = 000000
+___fini_array_count        = 000000
+__stack                    = D1A87E
+__iand                     = D1A995
+__frameset                 = D1A9AC
+__frameset0                = D1A9BA
+__idivs                    = D1A9C5
+__idvrms                   = D1A9CC
+__idvrmu                   = D1A9FA
+__imulu                    = D1AA12
+__ineg                     = D1AA42
+__irems                    = D1AA4B
+__ladd                     = D1AA53
+__lmulu                    = D1AA59
+__lsub                     = D1AAB5
+__ftol                     = 00027C
+__ftoul                    = 00027C
+__ltof                     = 000284
+__setflag                  = 000218
+__ultof                    = 000280
+_atomic_load_increasing_32 = D1AABF
+_delay                     = D1AAE4
+_os_DisableHomeTextBuffer  = D1AB0E
+_os_EnableHomeTextBuffer   = D1AB20
+_random                    = D1AB32
+__setstate                 = D1AB90
+__state                    = D1B37B
+___sleep_common.3          = D1ABA2
+_boot_GetDate              = 0005A8
+_boot_GetTime              = 0005B0
+_os_GetCSC                 = 021D3C
+_mktime                    = D1ABBB
+_mktime.yday               = D1B394
+_time                      = D1ACBF
+_clock                     = D1AD3D
+_rand                      = D1AD48
+_srand                     = D1AD55
+.missingappvar             = D1B3B8
+.libloadname               = D1B3BD
+.libloadnamelen            = 000007
+.webaddress                = D1B3C5
+___init_clock              = D1A91C
+__start                    = D1A937
+___exithl                  = D1A961
+skip._exit                 = D1A961
+skip.__Exit                = D1A961
+skip._abort                = D1A961
+_exit.sp                   = D1A962
+_exit.flash_wait_states    = D1A96C
+_main                      = D1AD5D
+_init                      = D1AE60
+_process_key               = D1AE8C
+JTI2_0                     = D1B3DA
+_draw_snake                = D1AF12
+_update_snake              = D1AF73
+JTI4_0                     = D1B3F5
+_generate_edible           = D1B188
+_draw_edible               = D1B1C2
+_fill_cell                 = D1B204
+_snake_grow                = D1B22C
+JTI8_0                     = D1B401
+_darkmode                  = D1B38B
+_dead                      = D052C6
+_paused                    = D052C9
+_edible_safe               = D1B38E
+_eaten                     = D1B391
+_tail                      = D052CC
+_snake                     = D052CF
+_edible                    = D053BF
+lib.LibLoad                = D1A8ED
+_#gfx_Begin                = D1A900
+_#gfx_End                  = D1A904
+_#gfx_SetColor             = D1A908
+_#gfx_SetDraw              = D1A90C
+_#gfx_Blit                 = D1A910
+_#gfx_FillRectangle        = D1A914
+_#gfx_FillRectangle_NoClip = D1A918
