@@ -4,7 +4,7 @@ For code documentation, take a look at the header in src/
 ## Overview
 Just the snake game, my take on it at least
 - Up/Down/Right/Left buttons for movement, also 5/2/6/4 on the numpad
-- Enter to pause, mostly done for debugging reasons, might remove
+- Enter to pause, mostly done for debugging reasons, might remove.
 Of course if a feature is removed and you were a fan, feel free to
 fork the repo and implement it yourself (:
 - 2nd to quit
@@ -31,7 +31,7 @@ To install the pre-built `SNAKE.8xp` in `bin/` you will need:
     encounter an error.
 
 ## Building
-If you want to build this locally, you'll need the [CE Toolchain](https://github.com/CE-Programming/toolchain)
+If you want to build this locally, you'll need the [CE Toolchain](https://github.com/CE-Programming/toolchain).
 The instructions are pretty well documented [here](https://ce-programming.github.io/toolchain/index.html)
 
 ## Common Errors
