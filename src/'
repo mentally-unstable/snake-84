@@ -30,7 +30,7 @@ enum {
 int darkmode = 1;
 int dead = 0;
 int paused = 0;
-int speed = 50;
+int speed = 10;
 
 struct Snake_t {
     uint8_t x;
@@ -46,21 +46,16 @@ typedef struct {
     uint8_t x;
     uint8_t y;
     uint8_t color;
-} body_t;
-body_t body[MAX_LEN];
+} Body_t;
+Body_t body[MAX_LEN];
 int len = 0;
 
 gfx_point_t edible;
 int eaten = 1;
 
-void fill_screen(uint16_t color) {
-    memset(lcd_Ram, color, LCD_SIZE);
-}
-
-void fill_cell(int x, int y) {
-    gfx_FillRectangle((x*SCALE)+1, (y*SCALE)+1, SCALE-2, SCALE-2);
-}
-
+void init(void);
+void fill_screen(uint16_t color);
+void fill_cell(int x, int y);
 void process_key(uint8_t key);
 void draw_snake(void);
 void update_snake(void);
@@ -69,14 +64,9 @@ void generate_edible(void);
 
 int main(void) {
     srand(time(0));
+    init();
     gfx_Begin();
     gfx_SetDrawBuffer();
-
-    body[0] = (body_t) {snake.x, snake.y, GREEN};
-    body[1] = (body_t) {snake.x, snake.y-1, GREEN};
-    body[2] = (body_t) {snake.x, snake.y-2, GREEN};
-    body[3] = (body_t) {snake.x, snake.y-3, GREEN};
-    len += 4;
 
     uint16_t *pal = gfx_palette;
     pal[WHITE] = gfx_RGBTo1555(255, 255, 255);
@@ -85,9 +75,11 @@ int main(void) {
     pal[GREEN] = gfx_RGBTo1555(0, 255, 0);
     pal[YELLOW] = gfx_RGBTo1555(255, 255, 0);
 
-    // welcome
-    draw_welcome();
-    while (!os_GetCSC());
+    body[0] = (body_t) {snake.x, snake.y, GREEN};
+    body[1] = {body[0].x, body[0].y-SCALE, GREEN};
+    body[2] = {body[1].x, body[1].y-SCALE, GREEN};
+    body[3] = {body[2].x, body[2].y-SCALE, GREEN};
+    len += 4;
 
     uint8_t key;
     while ((key = os_GetCSC()) != sk_2nd)
@@ -107,6 +99,7 @@ int main(void) {
 
         draw_snake();
         update_snake();
+
         if (eaten) generate_edible();
         draw_edible();
 
@@ -123,37 +116,30 @@ void draw_snake(void) {
     gfx_SetColor(BLACK);
     if (darkmode) gfx_SetColor(GREEN);
 
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i <= len; i++) {
         fill_cell(body[i].x, body[i].y);
     }
 }
 
 void update_snake(void) {
-    if (snake.y < 0) dead = 1;
-    if (snake.y > HEIGHT) dead = 1;
-    if (snake.x < 0) dead = 1;
-    if (snake.x > WIDTH) dead = 1;
-    if (dead) return;
+    if (snake.y <= 0) snake.y = HEIGHT+snake.y;
+    if (snake.y >= HEIGHT) snake.y -= HEIGHT;
+    if (snake.x <= 0) snake.x = WIDTH+snake.x;
+    if (snake.x >= WIDTH) snake.x -= WIDTH;
 
     // add snake head
-    body_t new = (body_t) {snake.x, snake.y, GREEN};
-    body_t prev;
-    for (int i = 0; i <= len+1; i++) {
+    gfx_point_t new = (gfx_point_t) {snake.x, snake.y};
+    gfx_point_t prev;
+    for (int i = 0; i < len+1; i++) {
         prev = body[i];
-        body[i] = new;
-        new = prev;
+        body[i] = temp;
+        temp = body[i];
     }
-    len++;
 
-    // remove end of snake
     if (snake.x == edible.x &&
         snake.y == edible.y)
     {
-        eaten = 1;
-        speed -= 1;
-        if (speed < 10) speed = 10;
-    } else {
-        len--;
+        dead = 1;
     }
 
     switch (snake.vel) {
@@ -171,21 +157,41 @@ void update_snake(void) {
         break;
     }
 
-    for (int i = 1; i <= len; i++) {
-        if (body[i].x == snake.x &&
-            body[i].y == snake.y)
+    if (i == 0) continue;
+    snake[i].nextv = snake[i-1].vel;
+
+    for (int i = 1; i <= tail; i++) {
+        snake[i].vel = snake[i].nextv;
+
+        if (snake[i].x == snake[0].x &&
+            snake[i].y == snake[0].y)
         {
             dead = 1;
         }
+
+    }
+
+    if (snake[0].x == edible.x &&
+        snake[0].y == edible.y)
+    {
+        eaten = 1;
+        snake_grow();
     }
 }
 
 void draw_edible(void) {
     gfx_SetColor(RED);
+
+    if (!edible_safe) {
+        gfx_SetColor(rand()%2 ? RED : YELLOW);
+    }
+
     fill_cell(edible.x, edible.y);
 }
 
 void generate_edible(void) {
+    // if ((rand()%25)%5 == 0) edible_safe = 0;
+
     edible = (gfx_point_t) {
         rand()%WIDTH,
         rand()%HEIGHT,
@@ -202,6 +208,13 @@ void process_key(uint8_t key) {
 
         case sk_Enter:
             paused = paused ? 0 : 1;
+        break;
+
+        case sk_Add:
+            speed = 50;
+        break;
+        case sk_Sub:
+            speed = 10;
         break;
 
         case sk_Up:
@@ -225,6 +238,22 @@ void process_key(uint8_t key) {
     }
 }
 
-void draw_welcome(void) {
-    ;
+void init(void) {
+    tail = 0;
+    snake[0] = (seg_t) {
+        .x = (LCD_WIDTH/SCALE)/2,
+        .y = (LCD_HEIGHT/SCALE)/2,
+        .vel = WEST,
+        .nextv = WEST,
+    };
+
+    snake_grow();
+}
+
+void fill_screen(uint16_t color) {
+    memset(lcd_Ram, color, LCD_SIZE);
+}
+
+void fill_cell(int x, int y) {
+    gfx_FillRectangle((x*SCALE)+1, (y*SCALE)+1, SCALE-2, SCALE-2);
 }
